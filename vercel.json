@@ -1,5 +1,5 @@
 {
   "crons": [
-    { "path": "/api/pet-data/sync", "schedule": "17 */6 * * *" }
+    { "path": "/api/pet-data/sync", "schedule": "17 3 * * *" }
   ]
 }

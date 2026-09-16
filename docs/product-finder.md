@@ -28,7 +28,7 @@ omits expired/not-yet-started offers and unsafe/missing source URLs. Missing pri
 currency and stock remain unknown. Source failures preserve already loaded results.
 
 Refresh reads the database; it does not launch Apify or a website scrape. The existing
-Apify cron and vendor scraper remain responsible for collecting new data. No new
+daily Apify cron and vendor scraper remain responsible for collecting new data. No new
 database migration is required for this page. Shortlists use browser local storage,
 not the account-wide saved-items database; clearing browser storage removes them.
 
