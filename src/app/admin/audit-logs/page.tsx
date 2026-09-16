@@ -17,8 +17,8 @@ export default async function AdminAuditLogsPage() {
         resolutions, comment moderation, and user suspensions all write here automatically.
       </p>
 
-      <div className="mt-6 overflow-hidden rounded-2xl bg-surface shadow-[var(--shadow-card)]">
-        <table className="w-full text-left text-sm">
+      <div className="mt-6 overflow-x-auto rounded-2xl bg-surface shadow-[var(--shadow-card)]">
+        <table className="w-full min-w-[640px] text-left text-sm">
           <thead className="bg-paper text-xs uppercase tracking-wide text-navy/40">
             <tr>
               <th className="px-4 py-3">Admin</th>

@@ -37,6 +37,24 @@ const navGroups = [
 
 export default function AdminSidebar({ roleLabel, email }: { roleLabel: string; email: string }) {
   return (
+    <>
+    <details className="w-full border-b border-paper-dim bg-surface p-4 lg:hidden">
+      <summary className="cursor-pointer rounded-xl px-2 py-2 text-sm font-semibold text-navy">Admin menu</summary>
+      <nav className="mt-3 flex max-h-[70dvh] flex-col gap-3 overflow-y-auto border-t border-paper-dim pt-3">
+        {navGroups.map((group) => (
+          <div key={group.label}>
+            <p className="px-3 text-xs font-semibold uppercase text-navy/50">{group.label}</p>
+            {group.items.map((item) => (
+              <Link key={item.href} href={item.href} className="flex items-center gap-2.5 rounded-xl px-3 py-3 text-sm font-medium text-navy/80 hover:bg-paper">
+                <item.icon className="h-4 w-4" /> {item.label}
+              </Link>
+            ))}
+          </div>
+        ))}
+        <Link href="/" className="flex items-center gap-2.5 rounded-xl px-3 py-3 text-sm text-navy/70"><ExternalLink className="h-4 w-4" /> Back to site</Link>
+        <div className="rounded-xl bg-sage-light p-3 text-xs text-sage">{roleLabel} · {email}</div>
+      </nav>
+    </details>
     <aside className="hidden w-64 shrink-0 flex-col overflow-y-auto border-r border-paper-dim bg-surface p-5 lg:flex">
       <Link href="/" className="mb-6 flex items-center gap-2">
         <Logo size={32} />
@@ -82,5 +100,6 @@ export default function AdminSidebar({ roleLabel, email }: { roleLabel: string; 
         </div>
       </div>
     </aside>
+    </>
   );
 }

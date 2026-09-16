@@ -33,9 +33,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const role = Array.isArray(access.admin_roles) ? access.admin_roles[0] : access.admin_roles;
 
   return (
-    <div className="flex min-h-screen bg-paper">
+    <div className="flex min-h-screen flex-col bg-paper lg:flex-row">
       <AdminSidebar roleLabel={role?.label ?? "Admin"} email={user.email ?? ""} />
-      <main className="flex-1 p-6 lg:p-10">{children}</main>
+      <main className="min-w-0 flex-1 p-4 sm:p-6 lg:p-10">{children}</main>
     </div>
   );
 }

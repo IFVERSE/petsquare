@@ -58,8 +58,8 @@ export default function DealModerationList({ products }: { products: Product[] }
         ))}
       </div>
 
-      <div className="mt-4 overflow-hidden rounded-2xl bg-surface shadow-[var(--shadow-card)]">
-        <table className="w-full text-left text-sm">
+      <div className="mt-4 overflow-x-auto rounded-2xl bg-surface shadow-[var(--shadow-card)]">
+        <table className="w-full min-w-[640px] text-left text-sm">
           <thead className="bg-paper text-xs uppercase tracking-wide text-navy/40">
             <tr>
               <th className="px-4 py-3">Product</th>

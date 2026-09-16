@@ -23,13 +23,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
     .maybeSingle();
 
   return (
-    <div className="flex min-h-screen bg-paper">
+    <div className="flex min-h-screen flex-col bg-paper lg:flex-row">
       <DashboardSidebar
         name={profile?.full_name || user.email?.split("@")[0] || "Pet Owner"}
         email={user.email ?? ""}
         accountType={profile?.account_type ?? "pet_owner"}
       />
-      <main className="flex-1 p-6 lg:p-10">{children}</main>
+      <main className="min-w-0 flex-1 p-4 sm:p-6 lg:p-10">{children}</main>
     </div>
   );
 }
