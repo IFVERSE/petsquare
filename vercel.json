@@ -1,0 +1,5 @@
+{
+  "crons": [
+    { "path": "/api/pet-data/sync", "schedule": "17 */6 * * *" }
+  ]
+}

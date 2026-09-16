@@ -1,0 +1,40 @@
+import { chromium, expect } from '@playwright/test';
+const browser = await chromium.launch({ channel: process.env.TEST_BROWSER || 'chrome', headless: true });
+try {
+  const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  await page.goto(process.env.TEST_URL || 'http://localhost:3100/en/pet-data', { waitUntil: 'domcontentloaded' });
+  const launch = page.getByRole('button', { name: 'Open app guide', exact: true });
+  await expect(launch).toHaveCount(1);
+  await launch.click();
+  const dialog = page.getByRole('dialog', { name: 'PetSquare app guide' });
+  const whatsapp = dialog.getByRole('link', { name: /Contact support on WhatsApp/ });
+  await expect(whatsapp).toHaveAttribute('href', 'https://wa.me/436781288256');
+  await expect(whatsapp).toHaveAttribute('target', '_blank');
+  await expect(whatsapp).toBeVisible();
+  const input = dialog.getByRole('textbox', { name: 'Your app question' });
+  await expect(input).toBeFocused();
+  await expect(dialog.getByRole('button', { name: 'Send question' })).toBeDisabled();
+  await input.fill('how can you help'); await input.press('Enter');
+  await expect(dialog.getByRole('log')).toContainText('compare prices');
+  await dialog.getByRole('button', { name: 'Compare products', exact: true }).click();
+  await expect(dialog.getByRole('link', { name: 'Compare products' }).last()).toHaveAttribute('href', '/en/pet-data');
+  await dialog.getByRole('button', { name: 'Tell me more', exact: true }).click();
+  await expect(dialog.getByRole('log')).toContainText('delivery costs are not included');
+  for (let i = 0; i < 3; i++) { await input.fill('thanks'); await input.press('Enter'); }
+  await expect(input).toBeDisabled();
+  await expect(whatsapp).toBeVisible();
+  await expect(dialog.getByRole('status')).toContainText('Guide complete');
+  await expect(dialog.getByRole('log').locator('> div')).toHaveCount(13);
+  await dialog.getByRole('button', { name: 'Start new chat' }).click();
+  await expect(input).toBeEnabled();
+  await expect(dialog.getByRole('log').locator('> div')).toHaveCount(1);
+  await expect(input).toHaveAttribute('maxlength', '240');
+  await expect.poll(() => dialog.evaluate(el => { const b = el.getBoundingClientRect(); return b.left >= 0 && b.right <= innerWidth && b.top >= 0 && b.bottom <= innerHeight; })).toBe(true);
+  await input.press('Escape');
+  await expect(dialog).toHaveCount(0); await expect(launch).toBeFocused();
+  await launch.click();
+  await dialog.getByRole('button', { name: 'Find products', exact: true }).click();
+  await dialog.getByRole('link', { name: /^Find products/ }).click();
+  await expect(dialog).toHaveCount(0);
+  console.log('Passed: one global widget, helpful answers, contextual follow-up, localized links, six-question limit, reset, keyboard focus, mobile bounds and navigation.');
+} finally { await browser.close(); }

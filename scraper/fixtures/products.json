@@ -1,0 +1,18 @@
+{
+  "products": [
+    {
+      "title": "Premium Adult Dog Food 15kg",
+      "handle": "premium-adult-dog-food-15kg",
+      "body_html": "<p>Grain-inclusive dry kibble for adult dogs, real chicken first ingredient.</p>",
+      "images": [{ "src": "http://127.0.0.1:8931/images/photo.jpg" }],
+      "variants": [{ "price": "29.99", "compare_at_price": "45.99", "available": true }]
+    },
+    {
+      "title": "Regular Priced Leash",
+      "handle": "regular-leash",
+      "body_html": "<p>Standard leash, no discount.</p>",
+      "images": [{ "src": "http://127.0.0.1:8931/images/photo.jpg" }],
+      "variants": [{ "price": "12.00", "compare_at_price": null, "available": true }]
+    }
+  ]
+}

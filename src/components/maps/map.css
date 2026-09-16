@@ -1,0 +1,5 @@
+.pet-map-marker { background: transparent; border: 0; }
+.pet-map-dot { position: absolute; inset: 0; display: grid; place-items: center; border: 3px solid white; border-radius: 50%; background: #3e7056; color: white; font: bold 14px sans-serif; box-shadow: 0 3px 10px #0004; }
+.pet-map-pulse { position: absolute; inset: -5px; border-radius: 50%; background: #3e705680; animation: pet-map-pulse 2s ease-out infinite; }
+@keyframes pet-map-pulse { from { transform: scale(.7); opacity: .8; } to { transform: scale(1.8); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .pet-map-pulse { animation: none; } }

@@ -1,0 +1,139 @@
+@import "tailwindcss";
+
+@theme {
+  /* Token names stay constant across themes — only the values (below and in
+     the [data-theme] overrides) change. This means every component that
+     already uses bg-navy/text-tangerine/etc. is automatically theme-aware
+     with zero per-component changes. Default values here = "Nord & Forest". */
+  --color-navy: #24352F;        /* primary ink/text (flips light in OLED) */
+  --color-navy-light: #3B564C;
+  --color-paper: #F2F5EF;       /* page background (flips near-black in OLED) */
+  --color-paper-dim: #E1E9DC;   /* borders, dividers, muted fills */
+  --color-tangerine: #3F6B52;   /* primary accent/CTA — forest green */
+  --color-tangerine-light: #4F8063;
+  --color-sunshine: #C9A227;    /* ratings, highlights — muted gold */
+  --color-sage: #5E8F72;        /* verified/trust accent — moss green */
+  --color-sage-light: #E3ECDF;
+  --color-coral: #B3543F;       /* urgency/discount/danger — earthy rust */
+  --color-ink: #24352F;
+  --color-surface: #FFFFFF;     /* card/panel backgrounds (flips dark-elevated in OLED) */
+  --color-abyss: #16221E;       /* always-dark surfaces: hero/footer/CTAs,
+                                    image scrims, solid dark buttons/badges.
+                                    Intentionally dark in BOTH themes. */
+
+  --font-display: "Fredoka", ui-rounded, "SF Pro Rounded", system-ui, sans-serif;
+  --font-body: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+  --font-data: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
+
+  --shadow-card: 0 1px 2px rgba(22,38,74,0.04), 0 8px 24px -8px rgba(22,38,74,0.14);
+  --shadow-card-hover: 0 4px 8px rgba(22,38,74,0.06), 0 20px 40px -12px rgba(22,38,74,0.22);
+}
+
+/* ============================================================================
+   THEME MODES
+   Default (no data-theme attribute, or data-theme="nord-forest") is defined
+   above in @theme. Midnight OLED overrides the same custom properties here —
+   because every utility class compiles to `var(--color-x)`, this is enough
+   to re-theme the entire app with no per-component changes.
+   ========================================================================= */
+
+html[data-theme="midnight-oled"] {
+  --color-navy: #EDEFEC;         /* text flips to near-white on near-black */
+  --color-navy-light: #C7CDC9;
+  --color-paper: #050605;        /* true OLED near-black */
+  --color-paper-dim: #17201C;
+  --color-tangerine: #E7B93B;    /* midnight gold accent */
+  --color-tangerine-light: #F2CB63;
+  --color-sunshine: #F5D061;
+  --color-sage: #4FD69C;         /* bright mint so "verified" still reads as green */
+  --color-sage-light: #0E2B22;
+  --color-coral: #FF6B5E;        /* brighter for contrast against black */
+  --color-ink: #EDEFEC;
+  --color-surface: #0D1411;      /* dark elevated card surface, distinct from paper */
+  --color-abyss: #000000;        /* pure black statement sections */
+
+  --shadow-card: 0 1px 2px rgba(0,0,0,0.4), 0 8px 24px -8px rgba(0,0,0,0.6);
+  --shadow-card-hover: 0 4px 8px rgba(0,0,0,0.5), 0 20px 40px -12px rgba(0,0,0,0.7);
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: light;
+}
+
+html[data-theme="midnight-oled"] {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+h1, h2, h3, h4, .font-display {
+  font-family: var(--font-display);
+}
+
+.font-data {
+  font-family: var(--font-data);
+}
+
+/* Signature element: die-cut price-tag card, echoing the logo's % tag */
+.tag-card {
+  position: relative;
+  clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 0 100%);
+}
+
+.tag-card::before {
+  content: "";
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  background: var(--color-paper);
+  z-index: 10;
+}
+
+.tag-card-navy::before {
+  background: var(--color-navy);
+}
+
+/* Leash-swoosh divider */
+.leash-divider {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+::selection {
+  background: var(--color-tangerine);
+  color: white;
+}
+
+.rail::-webkit-scrollbar {
+  height: 6px;
+}
+.rail::-webkit-scrollbar-thumb {
+  background: var(--color-paper-dim);
+  border-radius: 9999px;
+}
+.rail::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@keyframes vendor-photo-drift { from { transform: scale(1); } to { transform: scale(1.08) translateY(-1%); } }
+.vendor-photo-drift { animation: vendor-photo-drift 12s ease-in-out infinite alternate; }
+@media (prefers-reduced-motion: reduce) { .vendor-photo-drift { animation: none; } }
