@@ -54,7 +54,10 @@ export async function discoverOsmPlaces({ country = 'DE', radius = 10000, limit 
     await response.body?.cancel();
     await new Promise(resolve => setTimeout(resolve, Math.min(10000, retry > 0 ? retry * 1000 : (attempt + 1) * 2000)));
   }
-  if (!response.ok) throw new Error(`OSM discovery failed (${response.status})`);
+  if (!response.ok) {
+    await response.body?.cancel().catch(() => {});
+    throw new Error(`OSM discovery failed (${response.status})`);
+  }
   const data = await response.json();
   if (data.remark || !Array.isArray(data.elements)) throw new Error('OSM returned an incomplete response');
   const seen = new Set();

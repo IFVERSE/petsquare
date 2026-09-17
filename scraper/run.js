@@ -27,12 +27,16 @@ if (queryLimit !== undefined && (!Number.isInteger(queryLimit) || queryLimit < 1
 const urlsArg = args.find((arg) => arg.startsWith("--urls="));
 const seedUrls = urlsArg ? urlsArg.slice("--urls=".length).split(",").filter(Boolean) : [];
 const limit = pLimit(3);
+const startAt = args.find((arg) => arg.startsWith("--start-at="))?.slice(11);
 
 async function main() {
   if (!dryRun) await checkDiscoverySchema();
   const startedAt = new Date().toISOString();
   if (countries?.some(code => !Object.hasOwn(seedLocations, code))) throw new Error("Unsupported country code");
-  const queries = (provider === "osm" ? (countries ?? Object.keys(seedLocations)).flatMap(country => categories.map(category => `${country}:${category}`)) : buildSeedQueries({ countries })).slice(0, queryLimit);
+  const allQueries = provider === "osm" ? (countries ?? Object.keys(seedLocations)).flatMap(country => categories.map(category => `${country}:${category}`)) : buildSeedQueries({ countries });
+  const startIndex = startAt ? allQueries.indexOf(startAt) : 0;
+  if (startIndex < 0) throw new Error("--start-at must match a selected seed query, e.g. BE:shelter");
+  const queries = allQueries.slice(startIndex).slice(0, queryLimit);
   console.log(`Running ${queries.length} ${provider} seed queries${dryRun ? " (dry run)" : ""}...`);
   const seen = new Set(), accepted = [], rejected = [], errors = [];
   let websitesScanned = 0, productsWritten = 0;

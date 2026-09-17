@@ -29,9 +29,10 @@ export async function checkWebsite(url) {
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), config.requestTimeoutMs);
+  let res;
 
   try {
-    const res = await fetch(url, {
+    res = await fetch(url, {
       redirect: "follow",
       signal: controller.signal,
       headers: {
@@ -39,7 +40,6 @@ export async function checkWebsite(url) {
           "Mozilla/5.0 (compatible; PetSquareBot/1.0; +https://petsquare.example/bot)",
       },
     });
-    clearTimeout(timeout);
 
     if (!res.ok) {
       return { ok: false, reason: `http_${res.status}`, finalUrl: res.url };
@@ -73,9 +73,13 @@ export async function checkWebsite(url) {
 
     return { ok: true, finalUrl: res.url, html };
   } catch (err) {
-    clearTimeout(timeout);
     const reason = err.name === "AbortError" ? "timeout" : "unreachable";
     return { ok: false, reason, error: err.message };
+  } finally {
+    // Release rejected responses too: unread bodies retain connections and can
+    // trigger an Undici parser assertion when the remote server closes them.
+    await res?.body?.cancel().catch(() => {});
+    clearTimeout(timeout);
   }
 }
 
@@ -87,13 +91,18 @@ export async function checkImageUrl(url) {
   if (!url) return false;
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), config.imageCheckTimeoutMs);
+  let res;
   try {
-    let res = await fetch(url, { method: "HEAD", signal: controller.signal });
-    if (!res.ok) res = await fetch(url, { method: "GET", signal: controller.signal });
-    clearTimeout(timeout);
+    res = await fetch(url, { method: "HEAD", signal: controller.signal });
+    if (!res.ok) {
+      await res.body?.cancel();
+      res = await fetch(url, { method: "GET", signal: controller.signal });
+    }
     return res.ok && (res.headers.get("content-type") || "").startsWith("image");
   } catch {
-    clearTimeout(timeout);
     return false;
+  } finally {
+    await res?.body?.cancel().catch(() => {});
+    clearTimeout(timeout);
   }
 }

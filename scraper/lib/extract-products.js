@@ -35,7 +35,10 @@ export async function extractProducts(baseUrl, homepageHtml, defaultCurrency) {
           signal: AbortSignal.timeout(10000),
           headers: { "User-Agent": "Mozilla/5.0 (compatible; PetSquareBot/1.0)" },
         });
-        if (!res.ok) continue;
+        if (!res.ok) {
+          await res.body?.cancel().catch(() => {});
+          continue;
+        }
         const html = await res.text();
 
         const jsonLdProducts = extractJsonLd(html, link).filter((p) => p.discountPrice < p.originalPrice);

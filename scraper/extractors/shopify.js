@@ -18,7 +18,10 @@ export async function extractShopify(baseUrl) {
   } catch {
     return null; // not reachable — let the caller fall through to the next strategy
   }
-  if (!res.ok) return null;
+  if (!res.ok) {
+    await res.body?.cancel().catch(() => {});
+    return null;
+  }
 
   let data;
   try {
