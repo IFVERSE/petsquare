@@ -1,4 +1,4 @@
-import { LayoutDashboard, PawPrint, Heart, Bell, Sparkles, ExternalLink, Store } from "lucide-react";
+import { LayoutDashboard, PawPrint, Heart, Bell, Sparkles, ExternalLink, Store, Menu, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import Logo from "@/components/ui/Logo";
 
@@ -22,8 +22,12 @@ export default function DashboardSidebar({
 }) {
   return (
     <>
-    <details className="w-full border-b border-paper-dim bg-surface p-4 lg:hidden">
-      <summary className="cursor-pointer rounded-xl px-2 py-2 text-sm font-semibold text-navy">Dashboard menu</summary>
+    <details className="group w-full border-b border-paper-dim bg-surface p-4 lg:hidden">
+      <summary className="flex min-h-12 cursor-pointer list-none items-center gap-3 rounded-xl bg-abyss px-4 py-3 text-sm font-semibold text-white shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-tangerine focus-visible:ring-offset-2 focus-visible:ring-offset-surface [&::-webkit-details-marker]:hidden">
+        <Menu aria-hidden="true" className="h-5 w-5 shrink-0" />
+        <span className="flex-1">{accountType === "vendor" ? "Vendor dashboard menu" : "My dashboard menu"}</span>
+        <ChevronDown aria-hidden="true" className="h-4 w-4 shrink-0 transition-transform group-open:rotate-180" />
+      </summary>
       <nav className="mt-3 flex max-h-[70dvh] flex-col gap-1 overflow-y-auto border-t border-paper-dim pt-3">
         {nav.map((item) => (
           <Link key={item.href} href={item.href} className="flex items-center gap-2.5 rounded-xl px-3 py-3 text-sm font-medium text-navy/80 hover:bg-paper">
