@@ -56,9 +56,10 @@ export async function getDeals(): Promise<Deal[]> {
   const { data, error } = await supabase
     .from("products")
     .select(
-      "id, vendor_id, name, description, image_url, species, original_price, discount_price, discount_percent, currency, availability, deal_starts_at, deal_ends_at, source_url, source, last_checked"
+      "id, vendor_id, name, description, image_url, species, original_price, discount_price, discount_percent, currency, availability, deal_starts_at, deal_ends_at, source_url, source, last_checked, vendors!inner(status)"
     )
     .eq("status", "active")
+    .eq("vendors.status", "verified")
     .order("last_checked", { ascending: false });
 
   if (error || !data) return [];

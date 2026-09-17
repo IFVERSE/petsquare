@@ -11,13 +11,15 @@ type User = {
 
 export default function UsersList({ users }: { users: User[] }) {
   const [rows, setRows] = useState(users);
+  const [error, setError] = useState("");
   const [filter, setFilter] = useState<"all" | "pet_owner" | "vendor" | "admin">("all");
   const [pending, startTransition] = useTransition();
 
   function toggle(id: string, current: string) {
     const next = current === "suspended" ? "active" : "suspended";
     startTransition(async () => {
-      await setUserStatus(id, next as "active" | "suspended");
+      const result = await setUserStatus(id, next as "active" | "suspended");
+      if (result?.error) { setError(result.error); return; }
       setRows((r) => r.map((u) => (u.id === id ? { ...u, status: next } : u)));
     });
   }
@@ -26,6 +28,7 @@ export default function UsersList({ users }: { users: User[] }) {
 
   return (
     <div className="mt-6">
+      {error && <p role="alert" className="mb-3 text-sm text-coral">{error}</p>}
       <div className="flex flex-wrap gap-2">
         {(["all", "pet_owner", "vendor", "admin"] as const).map((f) => (
           <button
@@ -41,7 +44,7 @@ export default function UsersList({ users }: { users: User[] }) {
       </div>
 
       <div className="mt-4 overflow-x-auto rounded-2xl bg-surface shadow-[var(--shadow-card)]">
-        <table className="w-full min-w-[640px] text-left text-sm">
+        <table className="admin-card-table admin-users-table w-full min-w-[640px] text-left text-sm">
           <thead className="bg-paper text-xs uppercase tracking-wide text-navy/40">
             <tr>
               <th className="px-4 py-3">Name</th>
@@ -63,7 +66,7 @@ export default function UsersList({ users }: { users: User[] }) {
                   </span>
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <button onClick={() => toggle(u.id, u.status)} disabled={pending} className="inline-flex items-center gap-1 text-xs font-medium text-navy/60 hover:text-navy disabled:opacity-50">
+                  <button onClick={() => toggle(u.id, u.status)} disabled={pending} className="inline-flex min-h-11 items-center gap-1 text-xs font-medium text-navy/60 hover:text-navy disabled:opacity-50">
                     {u.status === "suspended" ? (
                       <><ShieldCheck className="h-3.5 w-3.5" /> Reactivate</>
                     ) : (

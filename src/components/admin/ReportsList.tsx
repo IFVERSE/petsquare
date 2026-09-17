@@ -18,21 +18,24 @@ const statusColor: Record<string, string> = {
 
 export default function ReportsList({ reports }: { reports: Report[] }) {
   const [rows, setRows] = useState(reports);
+  const [error, setError] = useState("");
   const [pending, startTransition] = useTransition();
 
   function act(id: string, status: "under_review" | "resolved" | "dismissed") {
     startTransition(async () => {
-      await setReportStatus(id, status);
+      const result = await setReportStatus(id, status);
+      if (result?.error) { setError(result.error); return; }
       setRows((r) => r.map((rep) => (rep.id === id ? { ...rep, status } : rep)));
     });
   }
 
   return (
     <div className="mt-6 space-y-3">
+      {error && <p role="alert" className="text-sm text-coral">{error}</p>}
       {rows.map((r) => (
         <div key={r.id} className="rounded-2xl bg-surface p-4 shadow-[var(--shadow-card)]">
           <div className="flex flex-wrap items-start justify-between gap-3">
-            <div>
+            <div className="min-w-0 break-words">
               <div className="flex items-center gap-2">
                 <span className="rounded-full bg-paper px-2 py-0.5 text-xs capitalize text-navy/60">{r.target_type}</span>
                 <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusColor[r.status] ?? ""}`}>{r.status.replace("_", " ")}</span>
@@ -40,24 +43,24 @@ export default function ReportsList({ reports }: { reports: Report[] }) {
               <p className="mt-1.5 text-sm font-medium text-navy">{r.reason}</p>
               {r.details && <p className="mt-0.5 text-sm text-navy/60">{r.details}</p>}
               <p className="mt-1 text-xs text-navy/40">
-                Target ID: <span className="font-data">{r.target_id}</span>
+                Target ID: <span className="font-data break-all">{r.target_id}</span>
                 {r.reporter_email && ` · Reported by ${r.reporter_email}`}
                 {" · "}{new Date(r.created_at).toLocaleDateString()}
               </p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex w-full flex-wrap gap-2 sm:w-auto">
               {r.status === "pending" && (
-                <button onClick={() => act(r.id, "under_review")} disabled={pending} className="flex items-center gap-1 rounded-full border border-paper-dim px-3 py-1.5 text-xs font-medium text-navy/60 disabled:opacity-50">
+                <button onClick={() => act(r.id, "under_review")} disabled={pending} className="flex min-h-11 items-center gap-1 rounded-full border border-paper-dim px-3 py-1.5 text-xs font-medium text-navy/60 disabled:opacity-50">
                   <Eye className="h-3.5 w-3.5" /> Review
                 </button>
               )}
               {r.status !== "resolved" && (
-                <button onClick={() => act(r.id, "resolved")} disabled={pending} className="flex items-center gap-1 rounded-full bg-sage px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50">
+                <button onClick={() => act(r.id, "resolved")} disabled={pending} className="flex min-h-11 items-center gap-1 rounded-full bg-sage px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50">
                   <CheckCircle2 className="h-3.5 w-3.5" /> Resolve
                 </button>
               )}
               {r.status !== "dismissed" && (
-                <button onClick={() => act(r.id, "dismissed")} disabled={pending} className="flex items-center gap-1 rounded-full border border-paper-dim px-3 py-1.5 text-xs font-medium text-navy/60 disabled:opacity-50">
+                <button onClick={() => act(r.id, "dismissed")} disabled={pending} className="flex min-h-11 items-center gap-1 rounded-full border border-paper-dim px-3 py-1.5 text-xs font-medium text-navy/60 disabled:opacity-50">
                   <XCircle className="h-3.5 w-3.5" /> Dismiss
                 </button>
               )}

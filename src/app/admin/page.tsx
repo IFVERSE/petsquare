@@ -41,8 +41,7 @@ export default async function AdminDashboard() {
     <div>
       <h1 className="font-display text-2xl text-navy">Dashboard Overview</h1>
       <p className="mt-1 text-sm text-navy/50">
-        Live counts from Supabase. Run <code>npm run scrape</code> (Phase 3) to start
-        populating vendors and deals for real.
+        Live counts from Supabase. Use <a href="/admin/scraper" className="font-medium text-tangerine underline">Scraper Monitor</a> to fetch and publish validated vendors and deals.
       </p>
 
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -75,11 +74,8 @@ export default async function AdminDashboard() {
         </div>
       </div>
 
-      <div className="mt-8 rounded-2xl border border-dashed border-paper-dim p-6 text-sm text-navy/50">
-        Activity charts, vendor/deal management tables, a scraper monitor UI,
-        moderation queue, CMS, newsletters, and audit logs all land in Phase 6.
-        This dashboard proves the Supabase connection, RBAC gate, and scraper
-        pipeline are wired together end to end.
+      <div className="mt-8 rounded-2xl border border-paper-dim p-6 text-sm text-navy/60">
+        Manage vendors, deals, reports, comments, users and scraper runs from the navigation menu.
       </div>
     </div>
   );

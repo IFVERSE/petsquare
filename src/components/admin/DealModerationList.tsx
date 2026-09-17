@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { CheckCircle2, Ban, Trash2 } from "lucide-react";
+import { CheckCircle2, Ban, Trash2, XCircle } from "lucide-react";
 import { setProductStatus, deleteProductAdmin } from "@/app/admin/deals/actions";
 
 type Product = {
@@ -22,12 +22,14 @@ const filters = ["all", "active", "pending_verification", "expired", "rejected",
 
 export default function DealModerationList({ products }: { products: Product[] }) {
   const [rows, setRows] = useState(products);
+  const [error, setError] = useState("");
   const [filter, setFilter] = useState<(typeof filters)[number]>("all");
   const [pending, startTransition] = useTransition();
 
   function act(id: string, status: "active" | "expired" | "rejected" | "suspended") {
     startTransition(async () => {
-      await setProductStatus(id, status);
+      const result = await setProductStatus(id, status);
+      if (result?.error) { setError(result.error); return; }
       setRows((r) => r.map((p) => (p.id === id ? { ...p, status } : p)));
     });
   }
@@ -35,7 +37,8 @@ export default function DealModerationList({ products }: { products: Product[] }
   function remove(id: string) {
     if (!confirm("Delete this deal permanently?")) return;
     startTransition(async () => {
-      await deleteProductAdmin(id);
+      const result = await deleteProductAdmin(id);
+      if (result?.error) { setError(result.error); return; }
       setRows((r) => r.filter((p) => p.id !== id));
     });
   }
@@ -44,6 +47,7 @@ export default function DealModerationList({ products }: { products: Product[] }
 
   return (
     <div className="mt-6">
+      {error && <p role="alert" className="mb-3 text-sm text-coral">{error}</p>}
       <div className="flex flex-wrap gap-2">
         {filters.map((f) => (
           <button
@@ -59,7 +63,7 @@ export default function DealModerationList({ products }: { products: Product[] }
       </div>
 
       <div className="mt-4 overflow-x-auto rounded-2xl bg-surface shadow-[var(--shadow-card)]">
-        <table className="w-full min-w-[640px] text-left text-sm">
+        <table className="admin-card-table admin-deals-table w-full min-w-[640px] text-left text-sm">
           <thead className="bg-paper text-xs uppercase tracking-wide text-navy/40">
             <tr>
               <th className="px-4 py-3">Product</th>
@@ -90,13 +94,18 @@ export default function DealModerationList({ products }: { products: Product[] }
                 <td className="px-4 py-3">
                   <div className="flex justify-end gap-2">
                     {p.status !== "active" && (
-                      <button onClick={() => act(p.id, "active")} disabled={pending} className="text-sage hover:text-sage/70 disabled:opacity-50" aria-label="Activate">
+                      <button onClick={() => act(p.id, "active")} disabled={pending} className="flex min-h-11 min-w-11 items-center justify-center rounded-xl text-sage disabled:opacity-50" aria-label={`Activate ${p.name}`}>
                         <CheckCircle2 className="h-4 w-4" />
                       </button>
                     )}
                     {p.status === "active" && (
-                      <button onClick={() => act(p.id, "expired")} disabled={pending} className="text-navy/40 hover:text-navy disabled:opacity-50" aria-label="Mark expired">
+                      <button onClick={() => act(p.id, "expired")} disabled={pending} className="flex min-h-11 min-w-11 items-center justify-center rounded-xl text-navy/70 disabled:opacity-50" aria-label={`Mark ${p.name} expired`}>
                         <Ban className="h-4 w-4" />
+                      </button>
+                    )}
+                    {p.status !== "rejected" && (
+                      <button onClick={() => act(p.id, "rejected")} disabled={pending} className="flex min-h-11 min-w-11 items-center justify-center rounded-xl text-coral disabled:opacity-50" aria-label={`Reject ${p.name}`}>
+                        <XCircle className="h-4 w-4" />
                       </button>
                     )}
                     <button onClick={() => remove(p.id)} disabled={pending} className="text-coral/70 hover:text-coral disabled:opacity-50" aria-label="Delete">

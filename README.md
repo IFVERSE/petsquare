@@ -78,7 +78,7 @@ That's it for the UI. For the real backend:
    npm run seed:admin
    ```
 
-5. Sign in at `/auth/sign-in` with the printed credentials → visit `/admin`.
+5. Sign in at `/auth/sign-in` with the printed credentials. Active admins land on `/admin`.
    **Change that password immediately.**
 
 </details>
@@ -103,6 +103,10 @@ failing silently.
 
 - Vendor/product discovery uses OpenStreetMap by default — see
   [`docs/osm-scraper.md`](docs/osm-scraper.md).
+- Admins with `scraper.manage` can run a bounded discovery from `/admin/scraper`
+  on desktop or mobile. Set `SUPABASE_SERVICE_ROLE_KEY` on the server (including
+  Vercel) and apply the vendor discovery migration first. Validated vendors and
+  deals appear in the public directories after the run finishes.
 - The Zooplus product cache runs via Apify on a 6-hour Vercel cron and
   writes into Supabase; live pages only ever read the cache, never trigger
   a paid run on visit. Run `supabase/apify-pet-data.sql` once, then set
@@ -183,7 +187,7 @@ click-through analytics, and a private inbox.
 
 **Phase 6 — Admin Panel.** Full vendor management (edit/suspend/delete),
 deal moderation across every vendor, reports & comment moderation, user
-suspension, a read-only scraper monitor, and an audit log every admin
+suspension, a scraper monitor with a manual run control, and an audit log every admin
 action now writes to automatically.
 
 </details>
@@ -244,8 +248,8 @@ Nothing here is oversold — some things are genuinely incomplete:
   target's been hit, but nothing pushes a notification without a scheduled job.
 - **AI Assistant can't query the live deal catalog** — it's pet-aware chat,
   not yet a function-calling agent over Supabase.
-- **The scraper can't be triggered from the admin UI** — `/admin/scraper` is
-  read-only by design; it needs a background job runner to go further.
+- **Admin discovery runs are bounded** to two places per request for serverless
+  execution. Use the CLI for larger runs.
 - **Species inference is keyword-based**, not a real product taxonomy — good
   enough for personalization, not perfect.
 - **Nothing here has been tested against a live Supabase project** from the

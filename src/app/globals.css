@@ -72,6 +72,24 @@ body {
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
+@media (max-width: 639px) {
+  .admin-card-table { display: block; min-width: 0; }
+  .admin-card-table thead { display: none; }
+  .admin-card-table tbody { display: grid; gap: 0.75rem; padding: 0.75rem; }
+  .admin-card-table tr { display: block; overflow-wrap: anywhere; border: 1px solid var(--color-paper-dim); border-radius: 0.75rem; }
+  .admin-card-table td { display: flex; min-width: 0; align-items: flex-start; justify-content: space-between; gap: 0.75rem; padding: 0.5rem 0.75rem; text-align: right; }
+  .admin-card-table td::before { flex: 0 0 4.5rem; color: var(--color-navy); font-size: 0.75rem; font-weight: 600; text-align: left; }
+  .admin-access-table td:nth-child(1)::before, .admin-users-table td:nth-child(2)::before { content: "Email"; }
+  .admin-access-table td:nth-child(2)::before { content: "Role"; }
+  .admin-access-table td:nth-child(3)::before, .admin-users-table td:nth-child(4)::before, .admin-deals-table td:nth-child(4)::before { content: "Status"; }
+  .admin-access-table td:nth-child(4)::before, .admin-users-table td:nth-child(5)::before, .admin-deals-table td:nth-child(5)::before { content: "Action"; }
+  .admin-users-table td:nth-child(1)::before { content: "Name"; }
+  .admin-users-table td:nth-child(3)::before { content: "Type"; }
+  .admin-deals-table td:nth-child(1)::before { content: "Product"; }
+  .admin-deals-table td:nth-child(2)::before { content: "Vendor"; }
+  .admin-deals-table td:nth-child(3)::before { content: "Price"; }
+}
+
 h1, h2, h3, h4, .font-display {
   font-family: var(--font-display);
 }

@@ -66,7 +66,9 @@ export default function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
       } else {
         const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
         if (signInError) throw signInError;
-        router.replace(next);
+        const { data: { user } } = await supabase.auth.getUser();
+        const { data: admin } = user ? await supabase.from("admin_access").select("id").eq("user_id", user.id).eq("status", "active").maybeSingle() : { data: null };
+        router.replace(admin ? "/admin" : next);
         router.refresh();
       }
     } catch (err) {

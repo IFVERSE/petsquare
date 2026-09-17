@@ -11,12 +11,14 @@ type Comment = {
 
 export default function CommentsList({ comments }: { comments: Comment[] }) {
   const [rows, setRows] = useState(comments);
+  const [error, setError] = useState("");
   const [pending, startTransition] = useTransition();
 
   function toggle(id: string, current: string) {
     const next = current === "visible" ? "hidden" : "visible";
     startTransition(async () => {
-      await setCommentStatus(id, next as "visible" | "hidden");
+      const result = await setCommentStatus(id, next as "visible" | "hidden");
+      if (result?.error) { setError(result.error); return; }
       setRows((r) => r.map((c) => (c.id === id ? { ...c, status: next } : c)));
     });
   }
@@ -24,17 +26,19 @@ export default function CommentsList({ comments }: { comments: Comment[] }) {
   function remove(id: string) {
     if (!confirm("Delete this comment permanently?")) return;
     startTransition(async () => {
-      await deleteCommentAdmin(id);
+      const result = await deleteCommentAdmin(id);
+      if (result?.error) { setError(result.error); return; }
       setRows((r) => r.filter((c) => c.id !== id));
     });
   }
 
   return (
     <div className="mt-6 space-y-3">
+      {error && <p role="alert" className="text-sm text-coral">{error}</p>}
       {rows.map((c) => (
         <div key={c.id} className={`rounded-2xl p-4 shadow-[var(--shadow-card)] ${c.status === "hidden" ? "bg-paper" : "bg-surface"}`}>
-          <div className="flex items-start justify-between gap-3">
-            <div>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0 break-words">
               <p className="text-sm text-navy">&ldquo;{c.body}&rdquo;</p>
               <p className="mt-1 text-xs text-navy/40">
                 {c.author_email ?? "Unknown user"} on{" "}
@@ -44,10 +48,10 @@ export default function CommentsList({ comments }: { comments: Comment[] }) {
               </p>
             </div>
             <div className="flex shrink-0 gap-2">
-              <button onClick={() => toggle(c.id, c.status)} disabled={pending} className="text-navy/40 hover:text-navy disabled:opacity-50" aria-label="Toggle visibility">
+              <button onClick={() => toggle(c.id, c.status)} disabled={pending} className="flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-paper-dim text-navy/70 disabled:opacity-50" aria-label={c.status === "visible" ? "Hide comment" : "Show comment"}>
                 {c.status === "visible" ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
-              <button onClick={() => remove(c.id)} disabled={pending} className="text-coral/70 hover:text-coral disabled:opacity-50" aria-label="Delete">
+              <button onClick={() => remove(c.id)} disabled={pending} className="flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-paper-dim text-coral disabled:opacity-50" aria-label="Delete comment">
                 <Trash2 className="h-4 w-4" />
               </button>
             </div>

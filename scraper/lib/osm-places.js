@@ -34,7 +34,7 @@ export function normalizePlace(element, country) {
   };
 }
 
-export async function discoverOsmPlaces({ country = 'DE', radius = 10000, limit = 50, category = 'all', nationwide = false } = {}) {
+export async function discoverOsmPlaces({ country = 'DE', radius = 10000, limit = 50, category = 'all', nationwide = false, attempts = 3, timeoutMs = 30000 } = {}) {
   const center = seedLocations[country];
   if (!Object.hasOwn(seedLocations, country) || !center || !Number.isInteger(radius) || radius < 100 || radius > 25000 || !Number.isInteger(limit) || limit < 1 || limit > 100) throw new Error('Invalid OSM search parameters');
   if (category !== 'all' && !Object.hasOwn(osmCategories, category)) throw new Error('Invalid OSM category');
@@ -44,12 +44,12 @@ export async function discoverOsmPlaces({ country = 'DE', radius = 10000, limit 
   const query = `[out:json][timeout:25];area["ISO3166-1"="${country}"][admin_level=2]->.country;(${clauses});out center ${limit};`;
 
   let response;
-  for (let attempt = 0; attempt < 3; attempt++) {
+  for (let attempt = 0; attempt < attempts; attempt++) {
     response = await fetch(process.env.OSM_OVERPASS_URL || 'https://overpass-api.de/api/interpreter', {
     method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': 'PetSquare/0.1 (OSM vendor discovery)' },
-    body: new URLSearchParams({ data: query }), signal: AbortSignal.timeout(30000),
+    body: new URLSearchParams({ data: query }), signal: AbortSignal.timeout(timeoutMs),
     });
-    if (![429, 502, 503, 504].includes(response.status) || attempt === 2) break;
+    if (![429, 502, 503, 504].includes(response.status) || attempt === attempts - 1) break;
     const retry = Number(response.headers.get('retry-after'));
     await response.body?.cancel();
     await new Promise(resolve => setTimeout(resolve, Math.min(10000, retry > 0 ? retry * 1000 : (attempt + 1) * 2000)));

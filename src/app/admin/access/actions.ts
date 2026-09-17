@@ -16,14 +16,14 @@ export async function inviteAdmin(formData: FormData) {
 
   // RLS also enforces this — checking here just gives a clean error message
   // instead of a raw Postgres permission error.
-  const { error } = await supabase
+  const { data: created, error } = await supabase
     .from("admin_access")
-    .insert({ email, role_id: roleId, status: "pending", invited_by: user.id });
+    .insert({ email, role_id: roleId, status: "pending", invited_by: user.id }).select("id").single();
 
   if (error) return { error: error.message };
 
   revalidatePath("/admin/access");
-  return { success: true };
+  return { success: true, id: created.id };
 }
 
 export async function updateAdminStatus(accessId: string, status: "active" | "suspended") {

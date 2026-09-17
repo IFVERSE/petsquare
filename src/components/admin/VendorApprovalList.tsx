@@ -27,7 +27,8 @@ export default function VendorApprovalList({ vendors }: { vendors: Vendor[] }) {
 
   function act(id: string, status: "verified" | "rejected" | "suspended") {
     startTransition(async () => {
-      await setVendorStatus(id, status);
+      const result = await setVendorStatus(id, status);
+      if (result?.error) { setError(result.error); return; }
       setRows((r) => r.map((v) => (v.id === id ? { ...v, status } : v)));
     });
   }
@@ -61,7 +62,8 @@ export default function VendorApprovalList({ vendors }: { vendors: Vendor[] }) {
   function handleDelete(id: string) {
     if (!confirm("Delete this vendor permanently? This also deletes their products.")) return;
     startTransition(async () => {
-      await deleteVendor(id);
+      const result = await deleteVendor(id);
+      if (result?.error) { setError(result.error); return; }
       setRows((r) => r.filter((v) => v.id !== id));
     });
   }
@@ -70,6 +72,7 @@ export default function VendorApprovalList({ vendors }: { vendors: Vendor[] }) {
 
   return (
     <div className="mt-6 space-y-3">
+      {error && <p role="alert" className="break-words text-sm text-coral">{error}</p>}
       {pendingFirst.map((v) => (
         <div key={v.id} className="rounded-2xl bg-surface p-5 shadow-[var(--shadow-card)]">
           {editingId === v.id ? (
@@ -89,8 +92,8 @@ export default function VendorApprovalList({ vendors }: { vendors: Vendor[] }) {
             </form>
           ) : (
             <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <div className="flex items-center gap-2">
+              <div className="min-w-0 flex-1 break-words">
+                <div className="flex flex-wrap items-center gap-2">
                   <p className="font-display text-base text-navy">{v.name}</p>
                   <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusColor[v.status] ?? ""}`}>{v.status}</span>
                   {v.source === "vendor_submitted" && (
@@ -103,37 +106,37 @@ export default function VendorApprovalList({ vendors }: { vendors: Vendor[] }) {
                 </p>
                 {v.owner_email && <p className="mt-0.5 text-xs text-navy/40">Owner: {v.owner_email}</p>}
                 {v.website && (
-                  <a href={v.website} target="_blank" rel="noopener noreferrer" className="mt-1 flex items-center gap-1 text-xs text-tangerine hover:underline">
+                  <a href={v.website} target="_blank" rel="noopener noreferrer" className="mt-1 flex items-center gap-1 break-all text-xs text-tangerine hover:underline">
                     <ExternalLink className="h-3 w-3" /> {v.website}
                   </a>
                 )}
               </div>
 
-              <div className="flex flex-wrap gap-2">
+              <div className="flex w-full flex-wrap gap-2 sm:w-auto">
                 {v.status === "pending" && (
                   <>
-                    <button onClick={() => act(v.id, "verified")} disabled={pending} className="flex items-center gap-1 rounded-full bg-sage px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50">
+                    <button onClick={() => act(v.id, "verified")} disabled={pending} className="flex min-h-11 items-center gap-1 rounded-full bg-sage px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50">
                       <CheckCircle2 className="h-3.5 w-3.5" /> Approve
                     </button>
-                    <button onClick={() => act(v.id, "rejected")} disabled={pending} className="flex items-center gap-1 rounded-full border border-paper-dim px-3 py-1.5 text-xs font-medium text-navy/60 disabled:opacity-50">
+                    <button onClick={() => act(v.id, "rejected")} disabled={pending} className="flex min-h-11 items-center gap-1 rounded-full border border-paper-dim px-3 py-1.5 text-xs font-medium text-navy/60 disabled:opacity-50">
                       <XCircle className="h-3.5 w-3.5" /> Reject
                     </button>
                   </>
                 )}
                 {v.status === "verified" && (
-                  <button onClick={() => act(v.id, "suspended")} disabled={pending} className="flex items-center gap-1 rounded-full border border-paper-dim px-3 py-1.5 text-xs font-medium text-navy/60 disabled:opacity-50">
+                  <button onClick={() => act(v.id, "suspended")} disabled={pending} className="flex min-h-11 items-center gap-1 rounded-full border border-paper-dim px-3 py-1.5 text-xs font-medium text-navy/60 disabled:opacity-50">
                     <ShieldOff className="h-3.5 w-3.5" /> Suspend
                   </button>
                 )}
                 {v.status === "suspended" && (
-                  <button onClick={() => act(v.id, "verified")} disabled={pending} className="flex items-center gap-1 rounded-full bg-sage px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50">
+                  <button onClick={() => act(v.id, "verified")} disabled={pending} className="flex min-h-11 items-center gap-1 rounded-full bg-sage px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50">
                     <CheckCircle2 className="h-3.5 w-3.5" /> Reactivate
                   </button>
                 )}
-                <button onClick={() => setEditingId(v.id)} className="flex items-center gap-1 rounded-full border border-paper-dim px-3 py-1.5 text-xs font-medium text-navy/60">
+                <button onClick={() => setEditingId(v.id)} className="flex min-h-11 items-center gap-1 rounded-full border border-paper-dim px-3 py-1.5 text-xs font-medium text-navy/60">
                   <Pencil className="h-3.5 w-3.5" /> Edit
                 </button>
-                <button onClick={() => handleDelete(v.id)} disabled={pending} className="flex items-center gap-1 rounded-full border border-paper-dim px-3 py-1.5 text-xs font-medium text-coral disabled:opacity-50">
+                <button onClick={() => handleDelete(v.id)} disabled={pending} className="flex min-h-11 items-center gap-1 rounded-full border border-paper-dim px-3 py-1.5 text-xs font-medium text-coral disabled:opacity-50">
                   <Trash2 className="h-3.5 w-3.5" /> Delete
                 </button>
               </div>

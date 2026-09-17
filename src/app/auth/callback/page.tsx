@@ -23,7 +23,9 @@ function Confirmation() {
       const { error: confirmationError } = await supabase.auth.exchangeCodeForSession(code);
       if (!active) return;
       if (confirmationError) { setError("This confirmation link expired or was opened in a different browser. Please sign in or request a new link."); return; }
-      router.replace(next);
+      const { data: { user } } = await supabase.auth.getUser();
+      const { data: admin } = user ? await supabase.from("admin_access").select("id").eq("user_id", user.id).eq("status", "active").maybeSingle() : { data: null };
+      router.replace(admin ? "/admin" : next);
       router.refresh();
     }
     void confirm();

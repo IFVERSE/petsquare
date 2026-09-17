@@ -39,7 +39,7 @@ export default function NearbyPreview() {
               </div>
             </motion.div>
           ))}
-          <div className="absolute bottom-4 left-4 rounded-xl bg-white/95 px-3 py-2 text-xs font-medium text-navy shadow-md">
+          <div className="absolute bottom-4 left-4 rounded-xl bg-surface/95 px-3 py-2 text-xs font-medium text-navy shadow-md">
             {vendors.length} vendors nearby · map preview
           </div>
         </motion.div>

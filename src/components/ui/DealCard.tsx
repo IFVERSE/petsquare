@@ -36,7 +36,7 @@ export default function DealCard({ deal, vendor }: { deal: Deal; vendor: Vendor 
             toggle();
           }}
           aria-label={saved ? "Remove from saved" : "Save this deal"}
-          className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 shadow-sm transition-transform hover:scale-110"
+          className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-surface/90 shadow-sm transition-transform hover:scale-110"
         >
           <Heart className={`h-3.5 w-3.5 ${saved ? "fill-coral text-coral" : "text-navy/50"}`} />
         </button>

@@ -27,15 +27,7 @@ export default function AccessManager({
       if (res?.error) {
         setError(res.error);
       } else {
-        setRows((r) => [
-          {
-            id: crypto.randomUUID(),
-            email,
-            status: "pending",
-            role: roles.find((r) => r.id === roleId) ?? null,
-          },
-          ...r,
-        ]);
+        setRows((current) => [{ id: res.id, email, status: "pending", role: roles.find((role) => role.id === roleId) ?? null }, ...current]);
         setEmail("");
       }
     });
@@ -47,7 +39,7 @@ export default function AccessManager({
       const res = await updateAdminStatus(id, next);
       if (!res?.error) {
         setRows((r) => r.map((row) => (row.id === id ? { ...row, status: next } : row)));
-      }
+      } else setError(res.error);
     });
   }
 
@@ -89,10 +81,10 @@ export default function AccessManager({
           <UserPlus className="h-4 w-4" /> Authorize
         </button>
       </form>
-      {error && <p className="mt-2 text-sm text-coral">{error}</p>}
+      {error && <p role="alert" className="mt-2 text-sm text-coral">{error}</p>}
 
       <div className="mt-6 overflow-x-auto rounded-2xl bg-surface shadow-[var(--shadow-card)]">
-        <table className="w-full min-w-[640px] text-left text-sm">
+        <table className="admin-card-table admin-access-table w-full min-w-[640px] text-left text-sm">
           <thead className="bg-paper text-xs uppercase tracking-wide text-navy/40">
             <tr>
               <th className="px-5 py-3">Email</th>
@@ -124,7 +116,7 @@ export default function AccessManager({
                     <button
                       onClick={() => toggleStatus(row.id, row.status)}
                       disabled={pending}
-                      className="inline-flex items-center gap-1 text-xs font-medium text-navy/60 hover:text-navy disabled:opacity-50"
+                      className="inline-flex min-h-11 items-center gap-1 text-xs font-medium text-navy/60 hover:text-navy disabled:opacity-50"
                     >
                       {row.status === "active" ? (
                         <>
