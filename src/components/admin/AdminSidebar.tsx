@@ -1,7 +1,7 @@
 import Link from "next/link";
 import {
   LayoutDashboard, Users, ShieldCheck, ExternalLink, Store, Package,
-  ShieldAlert, MessageSquare, UserCog, Bot, ScrollText,
+  ShieldAlert, MessageSquare, UserCog, Bot, ScrollText, Menu, ChevronDown,
 } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 
@@ -38,8 +38,12 @@ const navGroups = [
 export default function AdminSidebar({ roleLabel, email }: { roleLabel: string; email: string }) {
   return (
     <>
-    <details className="w-full border-b border-paper-dim bg-surface p-4 lg:hidden">
-      <summary className="cursor-pointer rounded-xl px-2 py-2 text-sm font-semibold text-navy">Admin menu</summary>
+    <details className="group w-full border-b border-paper-dim bg-surface p-4 lg:hidden">
+      <summary className="flex min-h-12 cursor-pointer list-none items-center gap-3 rounded-xl bg-abyss px-4 py-3 text-sm font-semibold text-white shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-tangerine focus-visible:ring-offset-2 focus-visible:ring-offset-surface [&::-webkit-details-marker]:hidden">
+        <Menu aria-hidden="true" className="h-5 w-5 shrink-0" />
+        <span className="flex-1">Admin menu</span>
+        <ChevronDown aria-hidden="true" className="h-4 w-4 shrink-0 transition-transform group-open:rotate-180" />
+      </summary>
       <nav className="mt-3 flex max-h-[70dvh] flex-col gap-3 overflow-y-auto border-t border-paper-dim pt-3">
         {navGroups.map((group) => (
           <div key={group.label}>

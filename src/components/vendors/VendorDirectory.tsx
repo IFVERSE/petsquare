@@ -8,7 +8,7 @@ import { useI18n } from "@/i18n/I18nProvider";
 import { europe } from "../../../shared/europe.js";
 import CountryPreference from "@/components/ui/CountryPreference";
 import { useCountry } from "@/lib/hooks/use-country";
-import { Search, List, Map as MapIcon } from "lucide-react";
+import { Search, List, Map as MapIcon, ArrowRight, Store, Tag, MapPin } from "lucide-react";
 import { Vendor, Deal } from "@/lib/mock-data";
 import VendorCard from "@/components/ui/VendorCard";
 
@@ -96,11 +96,16 @@ export default function VendorDirectory({ vendors, deals }: { vendors: Vendor[];
   return (
     <div className="mx-auto max-w-7xl px-5 py-10 lg:px-8">
       <div className="mb-6"><CountryPreference /></div>
-      <div className="mb-2">
-        <h1 className="font-display text-3xl text-navy">Discover & Connect With PetSquare Vendors</h1>
-        <p className="mt-1 text-navy/60">
-          Find trusted pet stores, veterinary services, groomers, trainers, boarding facilities and other pet businesses near you.
-        </p>
+      <section className="rounded-3xl bg-abyss px-6 py-8 text-white sm:px-10 sm:py-10">
+        <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+          <div className="max-w-2xl"><p className="text-xs font-bold uppercase tracking-[0.2em] text-sage">The business directory</p><h1 className="mt-3 font-display text-3xl sm:text-4xl">Explore pet businesses near you</h1><p className="mt-3 text-sm leading-6 text-white/75 sm:text-base">Compare local stores and providers, browse their products and deals, or see them on a map.</p></div>
+          <a href={href("/services")} className="inline-flex min-h-11 shrink-0 items-center gap-2 self-start rounded-xl bg-surface px-4 py-2 text-sm font-semibold text-navy md:self-auto">Need a care service? <ArrowRight className="h-4 w-4" /></a>
+        </div>
+      </section>
+      <div className="mt-5 grid gap-3 sm:grid-cols-3">
+        <div className="flex items-center gap-3 rounded-2xl border border-paper-dim bg-surface p-4"><Store className="h-5 w-5 shrink-0 text-tangerine" /><div><p className="font-semibold text-navy">{vendors.length} businesses</p><p className="text-xs text-navy/60">Browse profiles and contact details</p></div></div>
+        <div className="flex items-center gap-3 rounded-2xl border border-paper-dim bg-surface p-4"><Tag className="h-5 w-5 shrink-0 text-tangerine" /><div><p className="font-semibold text-navy">{deals.filter((deal) => deal.availability !== "out_of_stock" && (!deal.dealEndsAt || new Date(deal.dealEndsAt).getTime() > Date.now())).length} available deals</p><p className="text-xs text-navy/60">Find offers from listed vendors</p></div></div>
+        <button type="button" onClick={() => setView("map")} className="flex items-center gap-3 rounded-2xl border border-paper-dim bg-surface p-4 text-left hover:border-sage"><MapPin className="h-5 w-5 shrink-0 text-tangerine" /><div><p className="font-semibold text-navy">Explore the map</p><p className="text-xs text-navy/60">See businesses by location</p></div></button>
       </div>
 
       {/* Search + view toggle */}

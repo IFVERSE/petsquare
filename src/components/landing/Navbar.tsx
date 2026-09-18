@@ -16,7 +16,7 @@ export default function Navbar() {
     { label: t("deals"), href: "/deals" },
     { label: "Live products", href: "/pet-data" },
     { label: t("vendors"), href: "/vendors" },
-    { label: t("services"), href: "/vendors?type=service" },
+    { label: t("services"), href: "/services" },
     { label: t("forPets"), href: "/#for-pets" },
     { label: t("locations"), href: "/vendors?view=map" },
   ];
